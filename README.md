@@ -22,7 +22,7 @@ pip install numpy matplotlib pandas sympy
    git clone [https://github.com/acaryawibawantra/Pratikum-komputasi-numerik.git](https://github.com/acaryawibawantra/Pratikum-komputasi-numerik.git)
    cd Pratikum-komputasi-numerik
 
-# Hasil Praktikum 1: Metode Regula Falsi
+# Hasil Praktikum 1 (ppt2): Metode Regula Falsi
 
 Mengimplementasikan metode tertutup Regula Falsi yang mampu menampilkan:
 
@@ -57,7 +57,7 @@ Hasil Grafik :
 
 
 
-# Hasil Praktikum 2: Metode Secant
+# Hasil Tugas Pratikum #1 (ppt3): Metode Secant
 
 Membangun program dengan User Interface terminal yang fleksibel untuk mempermudah pengguna dalam mengevaluasi berbagai persamaan matematika tanpa memodifikasi source code.
 
