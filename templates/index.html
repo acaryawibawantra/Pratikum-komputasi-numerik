@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metode Secant — Komputasi Numerik</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&family=SF+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            letter-spacing: -0.011em;
+            -webkit-font-smoothing: antialiased;
+        }
+        .mono {
+            font-family: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+        }
+        /* Apple-style smooth input field scaling */
+        .apple-input {
+            background-color: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+        }
+        .apple-input:focus {
+            background-color: #ffffff;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        
+        <div class="mb-12 flex justify-between items-center opacity-80 hover:opacity-100 transition-opacity">
+            <a href="/" class="text-sm font-medium text-[#0071e3] flex items-center gap-1.5 group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                </svg>
+                Praktikum Menu
+            </a>
+            <span class="text-xs font-mono tracking-wider text-gray-400 uppercase">Tugas #1 — Komnum</span>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.03)] border border-black/[0.02] overflow-hidden p-8 sm:p-12 mb-8">
+            <header class="mb-10">
+                <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f] mb-3">
+                    Metode Secant
+                </h1>
+                <p class="text-[17px] text-[#86868b] leading-relaxed max-w-xl">
+                    Metode numerik untuk mencari akar persamaan tanpa memerlukan turunan fungsi, menggunakan dua tebakan awal.
+                </p>
+            </header>
+
+            <form method="POST" action="/" class="space-y-8">
+                <div class="space-y-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-semibold tracking-wider text-[#1d1d1f] uppercase opacity-60">Persamaan Fungsi f(x)</label>
+                        <input type="text" name="persamaan" placeholder="Contoh: x**3 - x - 1" required
+                            class="w-full px-4 py-3.5 apple-input rounded-2xl text-[16px] font-medium"
+                            value="{{ persamaan or '' }}">
+                        <p class="text-xs text-[#86868b] mt-1 px-1">Gunakan format <span class="mono text-gray-600 bg-black/[0.04] px-1.5 py-0.5 rounded">x**3 - x - 1</span> untuk persamaan.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-semibold tracking-wider text-[#1d1d1f] uppercase opacity-60">Tebakan Awal x0</label>
+                            <input type="number" step="any" name="x0" required
+                                class="w-full px-4 py-3.5 apple-input rounded-2xl text-[16px] font-medium"
+                                value="{{ x0 or '' }}">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-semibold tracking-wider text-[#1d1d1f] uppercase opacity-60">Tebakan Awal x1</label>
+                            <input type="number" step="any" name="x1" required
+                                class="w-full px-4 py-3.5 apple-input rounded-2xl text-[16px] font-medium"
+                                value="{{ x1 or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-semibold tracking-wider text-[#1d1d1f] uppercase opacity-60">Toleransi Error</label>
+                            <input type="number" step="any" name="tol" placeholder="Contoh: 0.0001" required
+                                class="w-full px-4 py-3.5 apple-input rounded-2xl text-[16px] font-medium"
+                                value="{{ tol or '' }}">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-semibold tracking-wider text-[#1d1d1f] uppercase opacity-60">Maksimal Iterasi</label>
+                            <input type="number" name="max_iter" required
+                                class="w-full px-4 py-3.5 apple-input rounded-2xl text-[16px] font-medium"
+                                value="{{ max_iter or '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium py-4 px-6 rounded-2xl text-[16px] transition-all duration-200 cursor-pointer">
+                        Proses
+                    </button>
+                </div>
+            </form>
+
+            {% if error %}
+            <div class="mt-8 bg-[#ff3b30]/[0.06] border border-[#ff3b30]/0.15 p-4 rounded-2xl flex items-start gap-3">
+                <svg class="w-5 h-5 text-[#ff3b30] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="text-sm font-medium text-[#d70015]">
+                    {{ error }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if akar_akhir %}
+        <div class="space-y-6">
+            
+            <div class="bg-white rounded-3xl p-8 border border-black/[0.02] shadow-[0_10px_30px_rgba(0,0,0,0.01)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <span class="text-xs font-semibold tracking-wider text-[#86868b] uppercase">Akar yang Ditemukan</span>
+                    <h2 class="text-3xl font-semibold tracking-tight text-[#1d1d1f] mt-1 mono">{{ akar_akhir }}</h2>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-black/[0.02] shadow-[0_10px_30px_rgba(0,0,0,0.01)] overflow-hidden">
+                <div class="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 class="text-sm font-semibold tracking-wide text-[#1d1d1f]">Hasil Iterasi</h3>
+                </div>
+                
+                <div class="p-4 sm:p-6 overflow-x-auto">
+                    {{ hasil_tabel|safe }}
+                </div>
+            </div>
+
+            {% if grafik_url %}
+            <div class="bg-white rounded-3xl border border-black/[0.02] shadow-[0_10px_30px_rgba(0,0,0,0.01)] overflow-hidden p-8">
+                <h3 class="text-sm font-semibold tracking-wide text-[#1d1d1f] mb-6">Visualisasi Grafik</h3>
+                <img src="{{ grafik_url }}" alt="Grafik Metode Secant" class="w-full rounded-2xl">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        
+
+    </div>
+</body>
+</html>

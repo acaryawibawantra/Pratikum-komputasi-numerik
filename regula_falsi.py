@@ -4,8 +4,8 @@ import pandas as pd
 
 # 1. Definisikan fungsi f(x)
 def f(x):
-    # Contoh fungsi: x^3 - x - 1
-    return x**3 - x - 1
+    # Contoh fungsi: (x-1)
+    return (x-1)**3
 
 def regula_falsi(a, b, tol, max_iter):
     if f(a) * f(b) >= 0:
@@ -39,9 +39,9 @@ def regula_falsi(a, b, tol, max_iter):
             
     return data_iterasi, c
 
-batas_bawah = 1.0
+batas_bawah = 0.0
 batas_atas = 2.0
-target_toleransi = 0.0001
+target_toleransi = 0.000001
 maksimal_loop = 20
 
 hasil_iterasi, akar = regula_falsi(batas_bawah, batas_atas, target_toleransi, maksimal_loop)
